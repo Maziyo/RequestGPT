@@ -5,6 +5,7 @@ const WEBSOCKTET_URL = "wss://319ebfjiaj.execute-api.ap-southeast-2.amazonaws.co
 
 function RequestGPT({ onSocketReady }) {
     const [ws, setWS] = useState(null);
+    const [message, setMessages] = useState([]);
 
     useEffect(() => {
         const socket = new WebSocket(WEBSOCKTET_URL);
