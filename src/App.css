@@ -1,0 +1,14 @@
+*{
+  margin: 40;
+  padding: o;
+}
+
+body{
+  background-color: #FEFEFE;
+}
+
+button{
+  margin-top: 100px;
+  width: 400px;
+  height: 80px;
+}
