@@ -20,7 +20,7 @@ function App() {
         console.error("Error fetching last content:", error.message);
         setError(error);
       } else if (data && data.length > 0) {
-        const last = data[data.length-0]; // 배열의 마지막 항목
+        const last = data[data.length-1]; // 배열의 마지막 항목
         console.log("Last content:", last.contents);
 
         const formattedText = last.contents
