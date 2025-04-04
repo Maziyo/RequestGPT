@@ -37,7 +37,7 @@ function App() {
   return (
     <div>
       <h1>Hello</h1>
-      <pre style={{ whiteSpace: 'pre-wrap' }}>{formattedContent}</pre>
+      <pre style={{ whiteSpace: 'pre-wrap', fontSize: '1.8rem' }}>{formattedContent}</pre>
     </div>
   );
 }
