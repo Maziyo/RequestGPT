@@ -1,35 +1,35 @@
 import { useEffect, useState } from 'react';
-import './App.css';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_KEY
+);
 
 function App() {
   const [formattedContent, setFormattedContent] = useState("");
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchLastContent = async () => {
       const { data, error } = await supabase
         .from("memoryBook")
-        .select("contents");
-
+        .select("contents")
+        .order("num", { ascending: false }) // num이 가장 큰 순으로 정렬
+        .limit(1); // 가장 큰 num 값을 가진 행 1개 가져오기
+    
       if (error) {
         console.error("Error fetching last content:", error.message);
-        setError(error);
-      } else if (data && data.length > 0) {
-        const last = data[0]; // 배열의 마지막 항목
-        console.log("Last content:", last.contents);
-
-        const formattedText = last.contents
-          .replace(/@/g, '\n')
-          .replace(/\/\//g, '\n\n');
-
-        setFormattedContent(formattedText);
+        return;
+      }
+    
+      if (data?.length > 0) {
+        setFormattedContent(
+          data[0].contents.replace(/@/g, '\n').replace(/\/\//g, '\n\n')
+        );
       }
     };
+    
+    
 
     fetchLastContent();
   }, []);
@@ -37,7 +37,6 @@ function App() {
   return (
     <div>
       <h1>Hello</h1>
-      {error && <p style={{ color: 'red' }}>Error: {error.message}</p>}
       <pre style={{ whiteSpace: 'pre-wrap' }}>{formattedContent}</pre>
     </div>
   );
