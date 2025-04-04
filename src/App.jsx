@@ -1,35 +1,46 @@
-import { useState } from 'react'
-import './App.css'
-import RequestGPT from "./WebSocket.jsx";
+import { useEffect, useState } from 'react';
+import './App.css';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 function App() {
-  const [socket, setSocket] = useState(null);
+  const [formattedContent, setFormattedContent] = useState("");
+  const [error, setError] = useState(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    const fetchLastContent = async () => {
+      const { data, error } = await supabase
+        .from("memoryBook")
+        .select("contents")
+        .order("contents", { ascending: false }) 
+        .limit(1);
 
-    if(socket){
-      try{
-        socket.send(JSON.stringify({ Request : true }));
-        console.log("successfully request GPT API!");
-      } catch(error){
-        console.error("not request GPT API!");
+      if (error) {
+        console.error("Error fetching last content:", error.message);
+        setError(error);
+      } else if (data.length > 0) {
+        // 데이터 변환: '@' -> 줄바꿈, '//' -> 두 줄바꿈
+        const formattedText = data[0].contents
+          .replace(/@/g, '\n')
+          .replace(/\/\//g, '\n\n');
+
+        setFormattedContent(formattedText);
       }
-    } else{
-      console.error( "WebSocket이 아직 연결되지 않았습니다.");
-    }
-    
-  };
+    };
+
+    fetchLastContent();
+  }, []);
 
   return (
-   <div>
-    <RequestGPT onSocketReady = {setSocket}/>
-    <form onSubmit={handleSubmit}>
-    <button type='submit'>이야기 생성</button>
-    </form>
-    
-   </div>
-  )
+    <div>
+      <h1>Hello</h1>
+      {error && <p style={{ color: 'red' }}>Error: {error.message}</p>}
+      <pre style={{ whiteSpace: 'pre-wrap' }}>{formattedContent}</pre>
+    </div>
+  );
 }
 
-export default App
+export default App;
