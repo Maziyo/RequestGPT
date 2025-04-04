@@ -14,16 +14,16 @@ function App() {
     const fetchLastContent = async () => {
       const { data, error } = await supabase
         .from("memoryBook")
-        .select("contents")
-        .order("contents", { ascending: false }) 
-        .limit(1);
+        .select("contents");
 
       if (error) {
         console.error("Error fetching last content:", error.message);
         setError(error);
-      } else if (data.length > 0) {
-        // 데이터 변환: '@' -> 줄바꿈, '//' -> 두 줄바꿈
-        const formattedText = data[0].contents
+      } else if (data && data.length > 0) {
+        const last = data[data.length - 1]; // 배열의 마지막 항목
+        console.log("Last content:", last.contents);
+
+        const formattedText = last.contents
           .replace(/@/g, '\n')
           .replace(/\/\//g, '\n\n');
 
